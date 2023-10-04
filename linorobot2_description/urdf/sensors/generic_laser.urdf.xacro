@@ -8,8 +8,8 @@
       ray_count="360"
       min_angle="-3.1416"
       max_angle="3.1416"
-      min_range="0.08"
-      max_range="12.0"
+      min_range="0.12"
+      max_range="3.5"
       frame_id="laser"
       topic_name="scan"
     >

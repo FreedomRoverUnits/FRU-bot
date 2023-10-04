@@ -3,18 +3,18 @@
   <xacro:macro name="laser" params="*origin update_rate ray_count min_angle max_angle min_range max_range frame_id topic_name">
     <link name="${frame_id}">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0.019" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="0.032" length="0.016"/>
+          <cylinder radius="0.033" length="0.038"/>
         </geometry>
-        <material name="green">
-            <color rgba="0.003 0.639 0.223 1.0"/>
+        <material name="black">
+            <color rgba="0.0 0.0 0.0 1.0"/>
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="0 0 0.019" rpy="0 0 0"/>
         <geometry>
-          <cylinder radius="0.04" length="0.016"/>
+          <box size=".095 0.066 0.04" length="0.016"/>
         </geometry>
       </collision>
 
@@ -30,9 +30,9 @@
     <gazebo reference="${frame_id}">  
       <visual>  
         <material>
-          <ambient>0.003 0.639 0.223 1.0</ambient>  
-          <diffuse>0.003 0.639 0.223 1.0</diffuse>  
-          <specular>0.003 0.639 0.223 1.0</specular>  
+          <ambient>0.0 0.0 0.0 1.0</ambient>  
+          <diffuse>0.0 0.0 0.0 1.0</diffuse>  
+          <specular>0.0 0.0 0.0 1.0</specular>  
           <emissive>0.0 0.0 0.0 0.0</emissive>  
         </material>
       </visual> 

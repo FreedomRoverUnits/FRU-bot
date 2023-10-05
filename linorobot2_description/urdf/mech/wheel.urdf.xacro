@@ -27,19 +27,18 @@
       </inertial>
     </link>
     <gazebo reference="${side}_wheel_link">  
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>  
       <visual>  
         <material>
-          <ambient>0.0 0.0 0.0 1.0</ambient>  
-          <diffuse>0.0 0.0 0.0 1.0</diffuse>  
-          <specular>0.0 0.0 0.0 1.0</specular>  
-          <emissive>0.0 0.0 0.0 0.0</emissive>  
+          <ambient>0.1 0.1 0.1 1.0</ambient>  
+          <diffuse>0.1 0.1 0.1 1.0</diffuse>  
+          <specular>0.1 0.1 0.1 1.0</specular>  
+          <emissive>0.1 0.1 0.1 1.0</emissive>  
         </material>
       </visual>
-      <!-- <mu1>0.9</mu1>
-      <mu2>0.9</mu2>   -->
-      <!-- <kp>1000</kp>
-      <kd>1</kd> -->
     </gazebo>
+    
     <joint name="${side}_wheel_joint" type="continuous">
       <axis xyz="0 1 0" />
       <parent link="base_link"/>

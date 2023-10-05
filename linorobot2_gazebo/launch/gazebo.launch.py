@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+from ament_index_python import get_package_prefix
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution
@@ -23,10 +24,11 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     use_sim_time = True
+    # description_share_path = os.pathsep + os.path.join(get_package_prefix('linorobot2_description'), 'share')
 
-    joy_launch_path = PathJoinSubstitution(
-        [FindPackageShare('linorobot2_bringup'), 'launch', 'joy_teleop.launch.py']
-    )
+    # joy_launch_path = PathJoinSubstitution(
+    #     [FindPackageShare('linorobot2_bringup'), 'launch', 'joy_teleop.launch.py']
+    # )
 
     ekf_config_path = PathJoinSubstitution(
         [FindPackageShare("linorobot2_base"), "config", "ekf.yaml"]
@@ -39,6 +41,9 @@ def generate_launch_description():
     description_launch_path = PathJoinSubstitution(
         [FindPackageShare('linorobot2_description'), 'launch', 'description.launch.py']
     )
+    
+    # os.environ['GAZEBO_MODEL_PATH'] = os.environ['GAZEBO_MODEL_PATH'] + description_share_path if \
+    #     'GAZEBO_MODEL_PATH' in os.environ else description_share_path
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -48,7 +53,7 @@ def generate_launch_description():
         ),
 
         ExecuteProcess(
-            cmd=['gazebo', '--verbose', '-s', 'libgazebo_ros_factory.so',  '-s', 'libgazebo_ros_init.so', LaunchConfiguration('world')],
+            cmd=['gazebo', '', '-s', 'libgazebo_ros_factory.so',  '-s', 'libgazebo_ros_init.so', LaunchConfiguration('world')],
             output='screen'
         ),
 
@@ -86,9 +91,9 @@ def generate_launch_description():
             }.items()
         ),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(joy_launch_path),
-        )
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource(joy_launch_path),
+        # )
     ])
 
 #sources: 

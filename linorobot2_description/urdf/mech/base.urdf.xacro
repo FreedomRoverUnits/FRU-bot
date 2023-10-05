@@ -8,7 +8,7 @@
         <origin xyz="0 0 -0.006" rpy="0 0 0"/>
         <geometry>
           <!-- <box size="${length} ${inner_width} ${height}"/> -->
-          <mesh filename="package://linorobot2_description/urdf/meshes/capstone_mesh_FRU.stl" scale="0.001 0.001 0.001"/>
+          <mesh filename="file://$(find linorobot2_description)/urdf/meshes/capstone_mesh_FRU.stl" scale="0.001 0.001 0.001"/>
         </geometry>
         <material name="gray">
           <color rgba="0.5 0.5 0.5 1.0"/>
@@ -32,7 +32,7 @@
     </link>
 
     <gazebo reference="base_link">  
-      <visual>  
+      <visual>
         <material>
           <ambient>0.8392 0.6314 0.0 1.0</ambient>  
           <diffuse>0.8392 0.6314 0.0 1.0</diffuse>  

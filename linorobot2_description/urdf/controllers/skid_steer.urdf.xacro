@@ -24,6 +24,11 @@
         <publish_odom_tf>false</publish_odom_tf>
         <publish_wheel_tf>true</publish_wheel_tf>
         <odometry_frame>odom</odometry_frame>
+
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
+        <kp>10</kp>
+        <kd>1</kd>
       </plugin>
     </gazebo>
   </xacro:macro>

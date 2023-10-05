@@ -7,8 +7,8 @@
         <geometry>
           <cylinder radius="${radius}" length="${width}"/>
         </geometry>
-        <material name="black">
-            <color rgba="0.0 0.0 0.0 1.0"/>
+        <material name="gray">
+            <color rgba="0.1 0.1 0.1 1.0"/>
         </material>
       </visual>
       <collision>
@@ -27,8 +27,6 @@
       </inertial>
     </link>
     <gazebo reference="${side}_wheel_link">  
-      <mu1>0.2</mu1>
-      <mu2>0.2</mu2>  
       <visual>  
         <material>
           <ambient>0.1 0.1 0.1 1.0</ambient>  

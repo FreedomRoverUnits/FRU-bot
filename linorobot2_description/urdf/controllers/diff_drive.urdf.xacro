@@ -5,6 +5,7 @@
         <ros>
           <argument>odom:=odom/unfiltered</argument>
         </ros>
+        <robot_base_frame>base_link</robot_base_frame>
         <updateRate>100</updateRate>
         <left_joint>left_wheel_joint</left_joint>
         <right_joint>right_wheel_joint</right_joint>
@@ -12,14 +13,13 @@
         <wheel_diameter>${wheel_radius * 2}</wheel_diameter>
         <wheel_torque>${wheel_torque}</wheel_torque>
         <max_wheel_acceleration>1.0</max_wheel_acceleration>
-        <robot_base_frame>base_link</robot_base_frame>
         <publish_odom>true</publish_odom>
         <publish_odom_tf>false</publish_odom_tf>
         <publish_wheel_tf>true</publish_wheel_tf>
         <odometry_frame>odom</odometry_frame>
 
-        <mu1>0.9</mu1>
-        <mu2>0.9</mu2>
+        <mu1>0.5</mu1>
+        <mu2>0.5</mu2>
       </plugin>
     </gazebo>
   </xacro:macro>

@@ -7,7 +7,6 @@
   <xacro:include filename="$(find linorobot2_description)/urdf/mech/caster_wheel.urdf.xacro" />
   <xacro:include filename="$(find linorobot2_description)/urdf/sensors/imu.urdf.xacro" />
   <xacro:include filename="$(find linorobot2_description)/urdf/sensors/generic_laser.urdf.xacro" />
-  <xacro:include filename="$(find linorobot2_description)/urdf/sensors/depth_sensor.urdf.xacro" />
   <xacro:include filename="$(find linorobot2_description)/urdf/controllers/diff_drive.urdf.xacro" />
 
   <xacro:base 
@@ -43,16 +42,6 @@
   <xacro:if value="${front_caster_wheel}">
     <xacro:caster_wheel 
       side="front"
-      mass="0.01"
-      base_length="${base_length}" 
-      wheel_radius="${wheel_radius}" 
-      wheel_pos_z="${wheel_pos_z}" 
-    />
-  </xacro:if>
-
-  <xacro:if value="${rear_caster_wheel}">
-    <xacro:caster_wheel 
-      side="rear"
       mass="0.01"
       base_length="${base_length}" 
       wheel_radius="${wheel_radius}" 

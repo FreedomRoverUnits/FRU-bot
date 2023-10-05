@@ -24,7 +24,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     use_sim_time = True
-    # description_share_path = os.pathsep + os.path.join(get_package_prefix('linorobot2_description'), 'share')
+    description_share_path = os.pathsep + os.path.join(get_package_prefix('linorobot2_description'), 'share')
 
     # joy_launch_path = PathJoinSubstitution(
     #     [FindPackageShare('linorobot2_bringup'), 'launch', 'joy_teleop.launch.py']
@@ -42,8 +42,8 @@ def generate_launch_description():
         [FindPackageShare('linorobot2_description'), 'launch', 'description.launch.py']
     )
     
-    # os.environ['GAZEBO_MODEL_PATH'] = os.environ['GAZEBO_MODEL_PATH'] + description_share_path if \
-    #     'GAZEBO_MODEL_PATH' in os.environ else description_share_path
+    os.environ['GAZEBO_MODEL_PATH'] = os.environ['GAZEBO_MODEL_PATH'] + description_share_path if \
+        'GAZEBO_MODEL_PATH' in os.environ else description_share_path
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -53,7 +53,7 @@ def generate_launch_description():
         ),
 
         ExecuteProcess(
-            cmd=['gazebo', '', '-s', 'libgazebo_ros_factory.so',  '-s', 'libgazebo_ros_init.so', LaunchConfiguration('world')],
+            cmd=['gazebo', '-s', 'libgazebo_ros_factory.so',  '-s', 'libgazebo_ros_init.so', LaunchConfiguration('world')],
             output='screen'
         ),
 

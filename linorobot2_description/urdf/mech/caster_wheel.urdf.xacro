@@ -16,8 +16,8 @@
         <geometry>
           <sphere radius="${caster_wheel_radius}" />
         </geometry>
-        <material name="black">
-            <color rgba="0.0 0.0 0.0 1.0"/>
+        <material name="gray">
+            <color rgba="0.1 0.1 0.1 1.0"/>
         </material>
       </visual>
 
@@ -38,14 +38,16 @@
     </link>
 
     <gazebo reference="${side}_caster_wheel_link">
+      <visual/>
         <material>
           <ambient>0.1 0.1 0.1 1.0</ambient>  
           <diffuse>0.1 0.1 0.1 1.0</diffuse>  
           <specular>0.1 0.1 0.1 1.0</specular>  
           <emissive>0.1 0.1 0.1 1.0</emissive>  
         </material>
-        <mu1>0.01</mu1>
-        <mu2>0.01</mu2>
+      <visual/>
+      <mu1>0.01</mu1>
+      <mu2>0.01</mu2>
     </gazebo>
 
     <joint name="${side}_caster_wheel_joint" type="fixed">

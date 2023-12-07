@@ -12,9 +12,9 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
    ```
 
 2. Cloning the repository
-```
-git clone https://github.com/FreedomRoverUnits/linorobot2_FRU src/linorobot2
-```
+   ```
+   git clone https://github.com/FreedomRoverUnits/linorobot2_FRU src/linorobot2
+   ```
 3. Install linorobot2 dependencies
    ```
     cd <your_ws>
@@ -42,14 +42,26 @@ git clone https://github.com/FreedomRoverUnits/linorobot2_FRU src/linorobot2
    ```
 
 ## Quickstart
-1. Publish robot description and visualize w/ rviz2.
+1. Connect to robot.
+2. Start micro-ros agent via docker in another terminal.
+   ```
+   source /opt/ros/<your_ros_distro>/setup.bash
+   sudo docker run -it --rm --net=host microros/micro-ros-agent:humble udp4 --port 8888 -v6
+   ```
+3. Once connected publish robot description and visualize w/ rviz2.
    ```
     ros2 launch linorobot2_description description.launch.py rviz:=true
    ```
-2. Booting up the agent
+4. Booting up the agent
     ```
     ros2 launch linorobot2_bringup bringup_FRU.launch.py
     ```
+5. Control the robot manually via teleop twist commands.
+   ```
+   python3 teleop_twist_keyboard_FRU.py
+   ```
+
+## Creating a map. 
 
 ## Troubleshooting Guide (Directly from [linorobot2](https://github.com/linorobot/linorobot2))
 #### 1. The changes I made on a file are not taking effect on the package configuration/robot's behavior.

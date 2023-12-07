@@ -63,6 +63,40 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
 
 ## Creating a map. 
 
+1. Run SLAM toolbox.
+   ```
+   ros2 launch linorobot2_navigation slam.launch.py rviz:=true
+   ``` 
+2. Move the robot to build the map, and save it.
+   ```
+   cd linorobot2/linorobot2_navigation/maps
+   ros2 run nav2_map_server map_saver_cli -f <map_name> --ros-args -p save_map_timeout:=10000.
+   ```
+
+## Autonomous Navigation.
+1. First change MAP_NAME in navigation.launch.py to the name of the map you created. Or change it dynamically.
+   ```
+   cd <robot_ws>
+   colcon build
+
+   ros2 launch linorobot2_navigation navigation.launch.py map:=<path_to_map_file>/<map_name>.yaml
+   ```
+2. Run Nav2 package.
+   ```
+   ros2 launch linorobot2_navigation navigation.launch.py
+   ```
+
+Optional parameter for loading maps:
+
+* map - Path to newly created map <map_name.yaml>.
+  
+Optional parameters for simulation on host machine:
+
+* sim - Set to true for simulated robots on the host machine. Default value is false.
+* rviz - Set to true to visualize the robot in RVIZ. Default value is false.
+
+navigation.launch.py will continue to throw this error - 'Timed out waiting for transform from base_link to map to become available, tf error: Invalid frame ID "map" passed to canTransform argument target_frame - frame does not exist' until the robot's pose has been initialized.
+- Refer to [Nav2](https://navigation.ros.org/tutorials/docs/navigation2_on_real_turtlebot3.html#initialize-the-location-of-turtlebot-3) tutorial for more info.
 ## Troubleshooting Guide (Directly from [linorobot2](https://github.com/linorobot/linorobot2))
 #### 1. The changes I made on a file are not taking effect on the package configuration/robot's behavior.
 - You need to build your workspace every time you modify a file:

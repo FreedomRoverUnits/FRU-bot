@@ -23,9 +23,9 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     robot_base = os.getenv('LINOROBOT2_BASE')
-
+    
     urdf_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_description"), "urdf/robots", f"{robot_base}.urdf.xacro"]
+        [FindPackageShare("linorobot2_description"), "urdf/robots", "2wd_lino.urdf.xacro"]
     )
 
     rviz_config_path = PathJoinSubstitution(
@@ -56,11 +56,17 @@ def generate_launch_description():
             default_value='false',
             description='Use simulation time'
         ),
+        
+        DeclareLaunchArgument(
+            name='agent', 
+            default_value='agent0',
+            description='Agent name'
+        ),
 
         Node(
             package='joint_state_publisher',
             executable='joint_state_publisher',
-            name='joint_state_publisher',
+            namespace=LaunchConfiguration('agent'),
             condition=IfCondition(LaunchConfiguration("publish_joints"))
             # parameters=[
             #     {'use_sim_time': LaunchConfiguration('use_sim_time')}
@@ -70,7 +76,7 @@ def generate_launch_description():
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
-            name='robot_state_publisher',
+            namespace=LaunchConfiguration('agent'),
             output='screen',
             parameters=[
                 {

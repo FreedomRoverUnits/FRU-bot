@@ -48,14 +48,12 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
    source /opt/ros/<your_ros_distro>/setup.bash
    sudo docker run -it --rm --net=host microros/micro-ros-agent:humble udp4 --port 8888 -v6
    ```
-3. Once connected publish robot description and visualize w/ rviz2.
-   ```
-   ```
-4. Start EKF node and joint state publisher, set rviz flag to true to visualize robot description.
+
+3. Start EKF node and joint state publisher, set rviz flag to true to visualize robot description.
     ```
     ros2 launch linorobot2_bringup bringup_FRU.launch.py rviz:=true
     ```
-5. Control the robot manually via teleop twist commands.
+4. Control the robot manually via teleop twist commands.
    ```
    python3 teleop_twist_keyboard_FRU.py
    ```

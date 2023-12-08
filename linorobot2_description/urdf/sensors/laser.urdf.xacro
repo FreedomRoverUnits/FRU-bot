@@ -1,7 +1,7 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:property name="M_PI" value="3.1415926535897931" />
-  <xacro:macro name="laser" params="*origin update_rate ray_count min_angle max_angle min_range max_range frame_id topic_name">
-    <link name="${frame_id}">
+  <xacro:macro name="laser" params="prefix *origin update_rate ray_count min_angle max_angle min_range max_range frame_id topic_name">
+    <link name="${frame_id}${prefix}">
       <visual>
         <origin xyz="0 0 0.019" rpy="0 0 0"/>
         <geometry>
@@ -27,7 +27,7 @@
       </inertial>
     </link>
 
-    <gazebo reference="${frame_id}">  
+    <gazebo reference="${frame_id}${prefix}">  
       <visual>  
         <material>
           <ambient>0.0 0.0 0.0 1.0</ambient>  
@@ -38,13 +38,13 @@
       </visual> 
     </gazebo>
 
-    <joint name="${frame_id}_to_base_link" type="fixed">
-      <parent link="base_link"/>
-      <child link="${frame_id}"/>
+    <joint name="${frame_id}_to_base_link${prefix}" type="fixed">
+      <parent link="base_link${prefix}"/>
+      <child link="${frame_id}${prefix}"/>
       <xacro:insert_block name="origin" />
     </joint>
 
-    <gazebo reference="${frame_id}">
+    <gazebo reference="${frame_id}${prefix}">
       <sensor type="ray" name="${frame_id}_head_hokuyo_sensor">
         <always_on>true</always_on>
         <update_rate>${update_rate}</update_rate>

@@ -1,14 +1,14 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="imu">
-    <link name="imu_link"/>
+  <xacro:macro name="imu" params="prefix">
+    <link name="imu_link${prefix}"/>
     
-    <joint name="imu_to_base_link" type="fixed">
-      <parent link="base_link"/>
-      <child link="imu_link"/>
+    <joint name="imu_to_base_link${prefix}" type="fixed">
+      <parent link="base_link${prefix}"/>
+      <child link="imu_link${prefix}"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </joint>
 
-    <gazebo reference="imu_link">
+    <gazebo reference="imu_link${prefix}">
       <gravity>true</gravity>
       <sensor name="imu_sensor" type="imu">
       <always_on>true</always_on>

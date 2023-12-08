@@ -8,8 +8,12 @@ from launch.conditions import IfCondition, UnlessCondition
 
 
 def generate_launch_description():
+    ID = 1
+    urdf_path = PathJoinSubstitution(
+        [FindPackageShare("linorobot2_description"), "urdf/robots", f"agent{ID}.urdf.xacro"]
+    )
     ekf_config_path = PathJoinSubstitution(
-        [FindPackageShare("linorobot2_base"), "config", "ekf.yaml"]
+        [FindPackageShare("linorobot2_base"), "config", f"ekf_a{ID}.yaml"]
     )
     description_launch_path = PathJoinSubstitution(
         [FindPackageShare('linorobot2_description'), 'launch', 'description.launch.py']
@@ -25,19 +29,31 @@ def generate_launch_description():
             default_value="false",
             description='Using sim'
         ),
+        DeclareLaunchArgument(
+            name='loc',
+            default_value="true",
+            description='Start ekf_node'
+        ),
+        DeclareLaunchArgument(
+            name='urdf', 
+            default_value=urdf_path,
+            description='URDF path'
+        ),
         Node(
-                package='robot_localization',
-                executable='ekf_node',
-                name='ekf_filter_node',
-                output='screen',
-                parameters=[
-                    ekf_config_path
-                ],
-                remappings=[("odometry/filtered", "odom")]
+            package='robot_localization',
+            executable='ekf_node',
+            condition=IfCondition(LaunchConfiguration('loc')),
+            name=f'ekf_filter_node{ID}',
+            output='screen',
+            parameters=[
+                ekf_config_path
+            ],
+            remappings=[("odometry/filtered", f"agent{ID}/odom")]
             ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(description_launch_path),
             launch_arguments={'rviz' : LaunchConfiguration('rviz'),
-                              'sim' : LaunchConfiguration('sim')}.items()
+                              'sim' : LaunchConfiguration('sim'),
+                              'urdf' : LaunchConfiguration('urdf')}.items()
         )
     ])

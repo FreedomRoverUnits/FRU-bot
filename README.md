@@ -50,11 +50,10 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
    ```
 3. Once connected publish robot description and visualize w/ rviz2.
    ```
-    ros2 launch linorobot2_description description.launch.py rviz:=true
    ```
-4. Booting up the agent
+4. Start EKF node and joint state publisher, set rviz flag to true to visualize robot description.
     ```
-    ros2 launch linorobot2_bringup bringup_FRU.launch.py
+    ros2 launch linorobot2_bringup bringup_FRU.launch.py rviz:=true
     ```
 5. Control the robot manually via teleop twist commands.
    ```

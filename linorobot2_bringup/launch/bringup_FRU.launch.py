@@ -15,6 +15,16 @@ def generate_launch_description():
         [FindPackageShare('linorobot2_description'), 'launch', 'description.launch.py']
     )
     return LaunchDescription([
+        DeclareLaunchArgument(
+            name='rviz',
+            default_value="false",
+            description='Start rviz'
+        ),
+        DeclareLaunchArgument(
+            name='sim',
+            default_value="false",
+            description='Using sim'
+        ),
         Node(
                 package='robot_localization',
                 executable='ekf_node',
@@ -24,5 +34,10 @@ def generate_launch_description():
                     ekf_config_path
                 ],
                 remappings=[("odometry/filtered", "odom")]
-            )
+            ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(description_launch_path),
+            launch_arguments={'rviz' : LaunchConfiguration('rviz'),
+                              'sim' : LaunchConfiguration('sim')}.items()
+        )
     ])

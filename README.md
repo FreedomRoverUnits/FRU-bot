@@ -2,7 +2,7 @@
 ![linorobot2](docs/linorobot2.gif)
 
 ## Description
-Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package that facilitates development of 2/4 wheel-differential-drive and mecanum wheel drive robots built from accessible parts. This repository holds FRU's modifications that are proprietary to FRU's robot: [lds-01](https://github.com/ROBOTIS-GIT/hls_lfcd_lds_driver) 2D lidar, MPU 6050, TT motors, dual motor driver interface, custom 3D printed [chassis](https://www.printables.com/en/model/355730-two-wheeled-robot-chassis/files), and ESP32-DevKitC-32UE. Intended to run on a remote docker container communicating wirelessly with esp32.   
+Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package that facilitates development of 2/4 wheel-differential-drive and mecanum wheel drive robots built from accessible parts. This repository holds FRU's modifications that are proprietary to FRU's robot: [lds-01](https://github.com/ROBOTIS-GIT/hls_lfcd_lds_driver) 2D lidar, MPU 6050, TT motors, dual motor driver interface, custom 3D printed [chassis](https://www.printables.com/en/model/355730-two-wheeled-robot-chassis/files), and ESP32-DevKitC-32UE. Agent is intended to run on a remote docker container communicating wirelessly with esp32.   
 
 ## Installation
 1. Source ros distro
@@ -17,10 +17,10 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
    ```
 3. Install linorobot2 dependencies
    ```
-    cd <your_ws>
-    rosdep update && rosdep install --from-path src --ignore-src -y --skip-keys microxrcedds_agent
-    colcon build
-    source install/setup.bash
+   cd <your_ws>
+   rosdep update && rosdep install --from-path src --ignore-src -y --skip-keys microxrcedds_agent
+   colcon build
+   source install/setup.bash
    ```
 4. Export robot base type.
    ```
@@ -34,11 +34,11 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
    ```
 6. RViz Configuration installation.
    ```
-    cd <host_machine_ws>
-    git clone https://github.com/linorobot/linorobot2_viz src/linorobot2_viz
-    rosdep update && rosdep install --from-path src --ignore-src -y 
-    colcon build
-    source install/setup.bash
+   cd <host_machine_ws>
+   git clone https://github.com/linorobot/linorobot2_viz src/linorobot2_viz
+   rosdep update && rosdep install --from-path src --ignore-src -y 
+   colcon build
+   source install/setup.bash
    ```
 
 ## Quickstart
@@ -50,9 +50,9 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
    ```
 
 3. Start EKF node and joint state publisher, set rviz flag to true to visualize robot description.
-    ```
-    ros2 launch linorobot2_bringup bringup_FRU.launch.py rviz:=true
-    ```
+   ```
+   ros2 launch linorobot2_bringup bringup_FRU.launch.py rviz:=true
+   ```
 4. Control the robot manually via teleop twist commands.
    ```
    python3 teleop_twist_keyboard_FRU.py
@@ -98,11 +98,11 @@ navigation.launch.py will continue to throw this error - 'Timed out waiting for 
 #### 1. The changes I made on a file are not taking effect on the package configuration/robot's behavior.
 - You need to build your workspace every time you modify a file:
 
-    ```
-    cd <ros2_ws>
-    colcon build
-    #continue what you're doing...
-    ```
+   ```
+   cd <ros2_ws>
+   colcon build
+   #continue what you're doing...
+   ```
 
 #### 2. [`slam_toolbox]: Message Filter dropping message: frame 'laser'`
 - Try to up `transform_timeout` by 0.1 in linorobot2_navigation/config/slam.yaml until the warning is gone.
@@ -114,6 +114,6 @@ navigation.launch.py will continue to throw this error - 'Timed out waiting for 
 #### 4. Weird microROS agent behavior after updating the Linux/ROS
 - Don't forget to update the microROS agent as well after your updates. Just run:
     
-    ```
-    bash update_microros.bash
-    ```
+   ```
+   bash update_microros.bash
+   ```

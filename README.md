@@ -19,6 +19,7 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2). This repository h
    ```
 
 ## Quickstart
+For Simulation steps skip to step 3.
 1. Connect to robot wifi.
 2. Start micro-ros agent via docker in another terminal.
    ```
@@ -28,7 +29,11 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2). This repository h
 
 3. Start EKF node and joint state publisher, set rviz flag to true to visualize robot description.
    ```
-   ros2 launch linorobot2_FRU_bringup bringup_default.launch.py rviz:=true
+   ros2 launch fru_bot_bringup bringup_default.launch.py rviz:=true
+   ```
+   Or for simulation:
+   ```
+   ros
    ```
 4. Control the robot manually via teleop twist commands.
    ```
@@ -39,11 +44,11 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2). This repository h
 
 1. Run SLAM toolbox.
    ```
-   ros2 launch linorobot2_navigation slam.launch.py rviz:=true
+   ros2 launch fru_bot_navigation slam.launch.py rviz:=true
    ``` 
 2. Move the robot to build the map, and save it.
    ```
-   cd linorobot2/linorobot2_navigation/maps
+   cd fru_bot/fru_bot_navigation/maps
    ros2 run nav2_map_server map_saver_cli -f <map_name> --ros-args -p save_map_timeout:=10000.
    ```
 
@@ -53,11 +58,11 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2). This repository h
    cd <robot_ws>
    colcon build
 
-   ros2 launch linorobot2_navigation navigation.launch.py map:=<path_to_map_file>/<map_name>.yaml
+   ros2 launch fru_bot_navigation navigation.launch.py map:=<path_to_map_file>/<map_name>.yaml
    ```
 2. Run Nav2 package.
    ```
-   ros2 launch linorobot2_navigation navigation.launch.py
+   ros2 launch fru_bot_navigation navigation.launch.py
    ```
 
 Optional parameter for loading maps:
@@ -82,7 +87,7 @@ navigation.launch.py will continue to throw this error - 'Timed out waiting for 
    ```
 
 #### 2. [`slam_toolbox]: Message Filter dropping message: frame 'laser'`
-- Try to up `transform_timeout` by 0.1 in linorobot2_navigation/config/slam.yaml until the warning is gone.
+- Try to up `transform_timeout` by 0.1 in fru_bot_navigation/config/slam.yaml until the warning is gone.
 
 
 #### 3. `target_frame - frame does not exist`

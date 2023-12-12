@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot name="FRU_bot" xmlns:xacro="http://ros.org/wiki/xacro">
+    <xacro:property name="prefix" value="" />
+
+    <xacro:include filename="$(find fru_bot_description)/urdf/robots/2wd.urdf.xacro"/>
+    
+    <xacro:robot_2wd
+        prefix="${prefix}"
+    />
+</robot>

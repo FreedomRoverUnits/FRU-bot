@@ -5,10 +5,13 @@
 Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package that facilitates development of 2/4 wheel-differential-drive and mecanum wheel drive robots built from accessible parts. This repository holds FRU's modifications that are proprietary to FRU's robot: [lds-01](https://github.com/ROBOTIS-GIT/hls_lfcd_lds_driver) 2D lidar, MPU 6050, TT motors, dual motor driver interface, custom 3D printed [chassis](https://www.printables.com/en/model/355730-two-wheeled-robot-chassis/files), and ESP32-DevKitC-32UE. Agent is intended to run on a remote docker container communicating wirelessly with esp32.   
 
 ## Installation
-1. Source ros distro
+1. Recommended installation via installation script
+   * Creates ros2 workspace in $HOME/FRU_ws by default.
+   * Assumes docker in sudo usr group to pull micro-ROS agent docker image.
    ```
-   source /opt/ros/<your_ros_distro>/setup.bash
-   cd <your_ws>
+   source /opt/ros/<ros_distro>/setup.bash
+   cd /tmp
+   wget https://raw.githubusercontent.com/FreedomRoverUnits/FRU-bot/${ROS_DISTRO}/install_FRU_bot.bash
    ```
 
 2. Cloning the repository
@@ -22,21 +25,8 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
    colcon build
    source install/setup.bash
    ```
-4. Export robot base type.
+4. Build Step
    ```
-   echo "export LINOROBOT2_BASE=2wd" >> ~/.bashrc
-   source ~/.bashrc
-   ```
-5. Build Step
-   ```
-   colcon build
-   source install/setup.bash
-   ```
-6. RViz Configuration installation.
-   ```
-   cd <host_machine_ws>
-   git clone https://github.com/linorobot/linorobot2_viz src/linorobot2_viz
-   rosdep update && rosdep install --from-path src --ignore-src -y 
    colcon build
    source install/setup.bash
    ```
@@ -51,7 +41,7 @@ Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package th
 
 3. Start EKF node and joint state publisher, set rviz flag to true to visualize robot description.
    ```
-   ros2 launch linorobot2_bringup bringup_FRU.launch.py rviz:=true
+   ros2 launch linorobot2_FRU_bringup bringup_default.launch.py rviz:=true
    ```
 4. Control the robot manually via teleop twist commands.
    ```

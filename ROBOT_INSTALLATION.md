@@ -1,4 +1,4 @@
-## Manual installation of FRU-bot package on robot computer
+## Manual installation of FRU-bot package.
 
 ### 1. Install micro-ROS and its dependencies if not using a docker file to run micro-ROS agent.
 

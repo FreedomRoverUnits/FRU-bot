@@ -1,38 +1,25 @@
 # ROS2 Package for Freedom Rover Unit Host Development
-![linorobot2](docs/linorobot2.gif)
-
+![SLAM fig](docs/linorobot2.gif)
+![Telecommunication fig](docs/communication_fig.png)
 ## Description
-Fork of [linorobot2](https://github.com/linorobot/linorobot2), a ROS2 package that facilitates development of 2/4 wheel-differential-drive and mecanum wheel drive robots built from accessible parts. This repository holds FRU's modifications that are proprietary to FRU's robot: [lds-01](https://github.com/ROBOTIS-GIT/hls_lfcd_lds_driver) 2D lidar, MPU 6050, TT motors, dual motor driver interface, custom 3D printed [chassis](https://www.printables.com/en/model/355730-two-wheeled-robot-chassis/files), and ESP32-DevKitC-32UE. Agent is intended to run on a remote docker container communicating wirelessly with esp32.   
+Fork of [linorobot2](https://github.com/linorobot/linorobot2). This repository holds FRU's modifications that are proprietary to the FRU-bot. The FRU-bot consists of an [lds-01](https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_lds_01/) 2D lidar, [MPU 6050](https://www.sparkfun.com/products/10937), [TT motors](https://www.adafruit.com/product/3777), dual L298N motor-driver, IR speed [sensor](https://docs.sunfounder.com/projects/ultimate-sensor-kit/en/latest/components_basic/18-component_speed.html), and ESP32-WROOM-DevKitC. Power is delivered via a custom pcb board consisting of 7.4V, 5V, and 3.3V headers for fascilitated attachment of hardware interfaces. The robot chassis was sourced from an external party on [printables](https://www.printables.com/en/model/355730-two-wheeled-robot-chassis); although, the final chassis height was lowered for improved kinematics. Agent is intended to run on a remote docker container communicating wirelessly with esp32, but manual installation instructions are [available](ROBOT_INSTALLATION.md).
+
+![FRU-bot build fig](docs/Build_fig_w_back.png)
 
 ## Installation
-1. Recommended installation via installation script
+1. Recommended installation via installation script.
    * Creates ros2 workspace in $HOME/FRU_ws by default.
    * Assumes docker in sudo usr group to pull micro-ROS agent docker image.
    ```
    source /opt/ros/<ros_distro>/setup.bash
    cd /tmp
-   wget https://raw.githubusercontent.com/FreedomRoverUnits/FRU-bot/${ROS_DISTRO}/install_FRU_bot.bash
-   ```
-
-2. Cloning the repository
-   ```
-   git clone https://github.com/FreedomRoverUnits/linorobot2_FRU src/linorobot2
-   ```
-3. Install linorobot2 dependencies
-   ```
-   cd <your_ws>
-   rosdep update && rosdep install --from-path src --ignore-src -y --skip-keys microxrcedds_agent
-   colcon build
-   source install/setup.bash
-   ```
-4. Build Step
-   ```
-   colcon build
-   source install/setup.bash
+   wget https://raw.githubusercontent.com/FreedomRoverUnits/FRU-bot/humble/install_FRU_bot.bash
+   bash install_FRU_bot.bash <FRU_bot_ws>
+   source ~/.bashrc
    ```
 
 ## Quickstart
-1. Connect to robot.
+1. Connect to robot wifi.
 2. Start micro-ros agent via docker in another terminal.
    ```
    source /opt/ros/<your_ros_distro>/setup.bash

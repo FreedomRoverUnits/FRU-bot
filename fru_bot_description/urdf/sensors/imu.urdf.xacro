@@ -1,5 +1,5 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="imu" params="prefix">
+  <xacro:macro name="imu" params="prefix namespace">
     <link name="imu_link${prefix}"/>
     
     <joint name="imu_to_base_link${prefix}" type="fixed">
@@ -17,6 +17,7 @@
       <topic>__default_topic__</topic>
       <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <ros>
+          <namespace>/${namespace}</namespace> 
           <remapping>~/out:=imu/data</remapping>
         </ros>
         <initialOrientationAsReference>false</initialOrientationAsReference>

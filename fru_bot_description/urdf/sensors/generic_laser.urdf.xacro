@@ -2,13 +2,14 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find fru_bot_description)/urdf/sensors/laser.urdf.xacro" />
 
-  <xacro:macro name="generic_laser" params="prefix *origin">
+  <xacro:macro name="generic_laser" params="prefix namespace *origin">
     <xacro:laser
       prefix="${prefix}"
-      update_rate="1"
+      namespace="${namespace}"
+      update_rate="5"
       ray_count="360"
-      min_angle="-3.1416"
-      max_angle="3.1416"
+      min_angle="0.0"
+      max_angle="6.28319"
       min_range="0.12"
       max_range="3.5"
       frame_id="laser"
@@ -18,7 +19,7 @@
     </xacro:laser>
   </xacro:macro>
 
-  <xacro:macro name="generic_base_laser" params="prefix *origin">
+  <!-- <xacro:macro name="generic_base_laser" params="prefix namespace *origin">
     <xacro:laser
       prefix="${prefix}"
       update_rate="1"
@@ -32,5 +33,5 @@
     >
       <xacro:insert_block name="origin" />
     </xacro:laser>
-  </xacro:macro>
+  </xacro:macro> -->
 </robot>

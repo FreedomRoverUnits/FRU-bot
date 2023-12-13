@@ -31,48 +31,44 @@ def generate_launch_description():
     rviz_config_path = PathJoinSubstitution(
         [FindPackageShare(package_name), 'rviz', 'description.rviz']
     )
-
+    
     return LaunchDescription([
         DeclareLaunchArgument(
             name='urdf', 
             default_value=urdf_path,
             description='URDF path'
         ),
-        
         DeclareLaunchArgument(
             name='publish_joints', 
             default_value='true',
             description='Launch joint_states_publisher'
         ),
-
         DeclareLaunchArgument(
             name='rviz', 
             default_value='false',
             description='Run rviz'
         ),
-
         DeclareLaunchArgument(
             name='use_sim_time', 
             default_value='false',
             description='Use simulation time'
         ),
-        
         DeclareLaunchArgument(
             name='namespace',
             default_value=robot_name,
             description='Robot namespace'
+        ), 
+        DeclareLaunchArgument(
+            name='idx',
+            default_value='',
+            description='Robot index'
         ),
-
         Node(
             package='joint_state_publisher',
             executable='joint_state_publisher',
             namespace=LaunchConfiguration('namespace'),
             condition=IfCondition(LaunchConfiguration("publish_joints"))
-            # parameters=[
-            #     {'use_sim_time': LaunchConfiguration('use_sim_time')}
-            # ] #since galactic use_sim_time gets passed somewhere and rejects this when defined from launch file
         ),
-
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
@@ -81,11 +77,11 @@ def generate_launch_description():
             parameters=[
                 {
                     'use_sim_time': LaunchConfiguration('use_sim_time'),
-                    'robot_description': Command(['xacro ', LaunchConfiguration('urdf')])
+                    'robot_description': Command(
+                        ['xacro ', LaunchConfiguration('urdf'), ' ns_idx:=', LaunchConfiguration('idx')])
                 }
             ]
         ),
-
         Node(
             package='rviz2',
             executable='rviz2',
@@ -93,8 +89,7 @@ def generate_launch_description():
             output='screen',
             arguments=['-d', rviz_config_path],
             condition=IfCondition(LaunchConfiguration("rviz")),
-            parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')
-                         }]
+            parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
         )
     ])
 

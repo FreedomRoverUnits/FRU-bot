@@ -24,6 +24,11 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     use_sim_time = True
+    
+    robot_name = "FRU_bot"
+    robot_idx = '0'
+    robot_namespace = robot_name + robot_idx
+    
     description_share_path = os.pathsep + os.path.join(get_package_prefix('fru_bot_description'), 'share')
 
     ekf_config_path = PathJoinSubstitution(
@@ -47,7 +52,19 @@ def generate_launch_description():
             default_value=world_path,
             description='Gazebo world'
         ),
-
+        
+        DeclareLaunchArgument(
+            name='namespace',
+            default_value=robot_namespace,
+            description='Robot namespace'
+        ),
+        
+        DeclareLaunchArgument(
+            name='idx',
+            default_value=robot_idx,
+            description='Robot index'
+        ),
+        
         ExecuteProcess(
             cmd=['gazebo', '-s', 'libgazebo_ros_factory.so',  '-s', 'libgazebo_ros_init.so', LaunchConfiguration('world')],
             output='screen'
@@ -58,25 +75,36 @@ def generate_launch_description():
             executable='spawn_entity.py',
             name='urdf_spawner',
             output='screen',
-            arguments=["-topic", "robot_description", "-entity", "linorobot2"]
+            namespace=LaunchConfiguration('namespace'),
+            arguments=[
+                "-topic", "robot_description", 
+                "-entity", LaunchConfiguration('namespace'),
+                "-robot_namespace", LaunchConfiguration('namespace')]
         ),
 
         Node(
-            package='linorobot2_gazebo',
+            package='fru_bot_gazebo',
             executable='command_timeout.py',
-            name='command_timeout'
+            name='command_timeout',
+            namespace=LaunchConfiguration('namespace')
         ),
 
         Node(
             package='robot_localization',
             executable='ekf_node',
-            namespace='simulation',
+            namespace=LaunchConfiguration('namespace'),
             output='screen',
             parameters=[
-                {'use_sim_time': use_sim_time}, 
+                {'use_sim_time': use_sim_time,
+                 'imu0' : [LaunchConfiguration('namespace'), '/imu/data'],
+                 'odom0' : [LaunchConfiguration('namespace'), '/odom/unfiltered']
+                 }, 
                 ekf_config_path
             ],
-            remappings=[("odometry/filtered", "odom")]
+            remappings=[("odometry/filtered", "odom"),
+                        ('/tf', 'tf'), 
+                        ('/tf_static', 'tf_static')],
+            arguments=["-robot_namespace", LaunchConfiguration('namespace')]
         ),
 
         IncludeLaunchDescription(
@@ -84,6 +112,8 @@ def generate_launch_description():
             launch_arguments={
                 'use_sim_time': str(use_sim_time),
                 'publish_joints': 'false',
+                'namespace' : LaunchConfiguration('namespace'),
+                'idx' : LaunchConfiguration('idx')
             }.items()
         ),
     ])

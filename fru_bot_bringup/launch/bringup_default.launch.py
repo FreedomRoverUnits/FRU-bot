@@ -9,6 +9,9 @@ from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
     robot_name = "FRU_bot"
+    robot_idx = '0'
+    robot_namespace = robot_name + robot_idx
+    
     ekf_config_path = PathJoinSubstitution(
         [FindPackageShare("fru_bot_base"), "config", "ekf_default.yaml"]
     )
@@ -31,20 +34,34 @@ def generate_launch_description():
             default_value=robot_name,
             description='Robot namespace'
         ),
+        DeclareLaunchArgument(
+            name='idx',
+            default_value=robot_idx,
+            description='Robot index'
+        ),
         Node(
                 package='robot_localization',
                 executable='ekf_node',
                 namespace=LaunchConfiguration('namespace'),
                 output='screen',
                 parameters=[
+                    {
+                    'imu0' : [LaunchConfiguration('namespace'), '/imu/data'],
+                    'odom0' : [LaunchConfiguration('namespace'), '/odom/unfiltered']
+                    },
                     ekf_config_path
                 ],
-                remappings=[(f"odometry/filtered", "odom")]
+                remappings=[("odometry/filtered", "odom"),
+                        ('/tf', 'tf'), 
+                        ('/tf_static', 'tf_static')],
+                arguments=["-robot_namespace", LaunchConfiguration('namespace')]
             ),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(description_launch_path),
             launch_arguments={'rviz' : LaunchConfiguration('rviz'),
                               'sim' : LaunchConfiguration('sim'),
-                              'namespace' : LaunchConfiguration('namespace')}.items()
+                              'namespace' : LaunchConfiguration('namespace'),
+                              'idx' : LaunchConfiguration('idx')
+                              }.items()
         )
     ])

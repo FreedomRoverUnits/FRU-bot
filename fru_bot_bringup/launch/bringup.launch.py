@@ -13,8 +13,6 @@ def generate_launch_description():
     
     use_ns=str(False)
     
-    remappings = [("odometry/filtered", "odom"),] #  ('/tf', 'tf'), ('/tf_static', 'tf_static')
-    
     ekf_config_path = PathJoinSubstitution(
         [FindPackageShare("fru_bot_base"), "config", "ekf_default.yaml"]
     )
@@ -48,6 +46,10 @@ def generate_launch_description():
         name='ns', default_value=[robot_name, LaunchConfiguration('idx')], 
         description='Robot namespace'
     )
+    ns_launch_arg = DeclareLaunchArgument(
+        name='use_prefix', default_value='True', 
+        description='Use index as frame prefix'
+    )
     
     # Launch config defs
     use_rviz_lc = LaunchConfiguration('use_rviz'); sim_lc = LaunchConfiguration('sim')
@@ -58,11 +60,16 @@ def generate_launch_description():
     namespace_lc = PythonExpression(['"', LaunchConfiguration('ns'), '"', ' if ', use_ns_lc, ' else ""'])
     
     ekf_substitutions = {
+                'base_link_frame' : ['base_footprint', idx_lc],
+                'odom_frame' : ['odom', idx_lc],
+                'world_frame' : ['odom', idx_lc],
                 'odom0' : ['/', namespace_lc, '/', TextSubstitution(text='odom/unfiltered')],
                 'imu0' : ['/', namespace_lc, '/', TextSubstitution(text='imu/data')]
                 }
     configured_ekf_params = RewrittenYaml(source_file=ekf_config_path, param_rewrites=ekf_substitutions, 
                                           root_key=namespace_lc, convert_types=True)
+    
+    remappings = [("odometry/filtered", "odom")] #  ('/tf', 'tf'), ('/tf_static', 'tf_static')
     return LaunchDescription([
         use_rviz_launch_arg, use_loc_launch_arg, sim_launch_arg, use_sim_time_launch_arg, 
         use_ns_launch_arg, idx_launch_arg, ns_launch_arg,

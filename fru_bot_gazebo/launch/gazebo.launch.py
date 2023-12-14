@@ -76,6 +76,9 @@ def generate_launch_description():
     
     ekf_substitutions = {
                 'use_sim_time': str(use_sim_time),
+                'base_link_frame' : ['base_footprint', idx_lc],
+                'odom_frame' : ['odom', idx_lc],
+                'world_frame' : ['odom', idx_lc],
                 'odom0' : ['/', namespace_lc, '/', TextSubstitution(text='odom/unfiltered')],
                 'imu0' : ['/', namespace_lc, '/', TextSubstitution(text='imu/data')]
                 }

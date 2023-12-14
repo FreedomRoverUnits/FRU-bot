@@ -72,7 +72,7 @@
         </ray>
         <plugin name="${frame_id}_gazebo_ros_lds_lfcd_controller" filename="libgazebo_ros_ray_sensor.so">
           <ros>
-            <namespace>/${namespace}</namespace> 
+            <namespace>${namespace}</namespace> 
             <remapping>~/out:=${topic_name}</remapping>                                                                                                                         
           </ros>
           <output_type>sensor_msgs/LaserScan</output_type>

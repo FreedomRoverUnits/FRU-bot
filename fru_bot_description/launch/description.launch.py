@@ -17,13 +17,18 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, EnvironmentVariable
 from launch.conditions import IfCondition
-from launch_ros.actions import Node
+from launch_ros.actions import Node, PushRosNamespace
 from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
     robot_name = "FRU_bot"
     package_name = 'fru_bot_description'
+    use_ns = 'false'; idx='""'
+ 
+    remappings= [('/tf', 'tf'), ('/tf_static', 'tf_static')]
+
+    
     urdf_path = PathJoinSubstitution(
         [FindPackageShare(package_name), "urdf/robots", f"{robot_name}.urdf.xacro"]
     )
@@ -32,55 +37,59 @@ def generate_launch_description():
         [FindPackageShare(package_name), 'rviz', 'description.rviz']
     )
     
+    # Launch arg defs
+    urdf_launch_arg = DeclareLaunchArgument(
+            name='urdf', default_value=urdf_path, description='URDF path'
+        )
+    use_rviz_launch_arg = DeclareLaunchArgument(
+            name='use_rviz', default_value='false', description='Start rviz'
+        )
+    pub_jnts_launch_arg = DeclareLaunchArgument(
+            name='publish_joints', default_value='true', description='Launch joint_states_publisher'
+        )
+    use_sim_time_launch_arg = DeclareLaunchArgument(
+            name='use_sim_time', default_value='false', description='Using sim time'
+        )
+    use_ns_launch_arg = DeclareLaunchArgument(
+            name='use_ns', default_value=use_ns, description='Use a namespace'
+        )
+    namespace_launch_arg = DeclareLaunchArgument(
+            name='namespace', default_value = '', description='Robot namespace'
+        )
+    idx_launch_arg = DeclareLaunchArgument(
+            name='idx', default_value=idx, description='Robot index'
+        )
+    
+    # Launch Configuration Variables
+    urdf_lc = LaunchConfiguration('urdf'); pub_jnts_lc=LaunchConfiguration('publish_joints')
+    use_rviz_lc = LaunchConfiguration('use_rviz'); use_sim_time_lc = LaunchConfiguration('use_sim_time')
+    namespace_lc = LaunchConfiguration('namespace'); use_ns_lc = LaunchConfiguration('use_ns')
+    idx_lc = LaunchConfiguration('idx')  
     return LaunchDescription([
-        DeclareLaunchArgument(
-            name='urdf', 
-            default_value=urdf_path,
-            description='URDF path'
-        ),
-        DeclareLaunchArgument(
-            name='publish_joints', 
-            default_value='true',
-            description='Launch joint_states_publisher'
-        ),
-        DeclareLaunchArgument(
-            name='rviz', 
-            default_value='false',
-            description='Run rviz'
-        ),
-        DeclareLaunchArgument(
-            name='use_sim_time', 
-            default_value='false',
-            description='Use simulation time'
-        ),
-        DeclareLaunchArgument(
-            name='namespace',
-            default_value=robot_name,
-            description='Robot namespace'
-        ), 
-        DeclareLaunchArgument(
-            name='idx',
-            default_value='',
-            description='Robot index'
-        ),
+        urdf_launch_arg, use_rviz_launch_arg, pub_jnts_launch_arg, use_sim_time_launch_arg,
+        use_ns_launch_arg, namespace_launch_arg, idx_launch_arg,
+        
         Node(
             package='joint_state_publisher',
             executable='joint_state_publisher',
-            namespace=LaunchConfiguration('namespace'),
-            condition=IfCondition(LaunchConfiguration("publish_joints"))
+            name='joint_state_publisher',
+            namespace=namespace_lc,
+            condition=IfCondition(pub_jnts_lc)
         ),
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
-            namespace=LaunchConfiguration('namespace'),
+            name='robot_state_publisher',
+            namespace=namespace_lc,
             output='screen',
             parameters=[
                 {
-                    'use_sim_time': LaunchConfiguration('use_sim_time'),
+                    'use_sim_time': use_sim_time_lc,
                     'robot_description': Command(
-                        ['xacro ', LaunchConfiguration('urdf'), ' ns_idx:=', LaunchConfiguration('idx')])
+                        ['xacro ', urdf_lc, ' ns_idx:=', idx_lc, ' use_ns:=', use_ns_lc])
                 }
-            ]
+            ],
+            remappings=remappings
         ),
         Node(
             package='rviz2',
@@ -88,8 +97,8 @@ def generate_launch_description():
             name='rviz2',
             output='screen',
             arguments=['-d', rviz_config_path],
-            condition=IfCondition(LaunchConfiguration("rviz")),
-            parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+            condition=IfCondition(use_rviz_lc),
+            parameters=[{'use_sim_time': use_sim_time_lc}]
         )
     ])
 

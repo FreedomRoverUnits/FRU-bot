@@ -4,7 +4,7 @@
       <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
         <ros>
           <argument>odom:=odom/unfiltered</argument>
-          <namespace>/${namespace}</namespace>
+          <namespace>${namespace}</namespace>
         </ros>
         <robot_base_frame>base_footprint${prefix}</robot_base_frame>
         <updateRate>100</updateRate>

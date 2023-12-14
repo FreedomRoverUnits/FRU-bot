@@ -16,18 +16,22 @@ import os
 from ament_index_python import get_package_prefix
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, PythonExpression
+from launch.actions import SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-
+from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
-    use_sim_time = True
+    use_sim_time = 'true'
     
     robot_name = "FRU_bot"
-    robot_idx = '0'
-    robot_namespace = robot_name + robot_idx
+    robot_idx = '""'
+    use_ns = 'false'
+    
+    remappings = [("odometry/filtered", "odom"), ('/tf', 'tf'), 
+                        ('/tf_static', 'tf_static')]
     
     description_share_path = os.pathsep + os.path.join(get_package_prefix('fru_bot_description'), 'share')
 
@@ -43,28 +47,47 @@ def generate_launch_description():
         [FindPackageShare('fru_bot_description'), 'launch', 'description.launch.py']
     )
     
+    # Launch arg defs
     os.environ['GAZEBO_MODEL_PATH'] = os.environ['GAZEBO_MODEL_PATH'] + description_share_path if \
         'GAZEBO_MODEL_PATH' in os.environ else description_share_path
-
-    return LaunchDescription([
-        DeclareLaunchArgument(
-            name='world', 
-            default_value=world_path,
-            description='Gazebo world'
-        ),
-        
-        DeclareLaunchArgument(
-            name='namespace',
-            default_value=robot_namespace,
+    
+    world_launch_arg = DeclareLaunchArgument(
+            name='world', default_value=world_path, description='Gazebo world'
+        )
+    use_ns_launch_arg = DeclareLaunchArgument(
+            name='use_ns', default_value=use_ns, description='Use a namespace'
+        )
+    idx_launch_arg = DeclareLaunchArgument(
+            name='idx', default_value=robot_idx, description='Robot index'
+        )
+    ns_launch_arg = DeclareLaunchArgument(
+            name='ns', default_value=[robot_name, LaunchConfiguration('idx')], 
             description='Robot namespace'
-        ),
+        )
+    use_rviz_launch_arg = DeclareLaunchArgument(
+            name='use_rviz', default_value='false', description='Start rviz'
+        )
+    
+    ns_launch_arg = SetLaunchConfiguration(name='ns', value='', 
+        condition=UnlessCondition(LaunchConfiguration('use_ns')))
+    
+    # Launch config defs
+    use_ns_lc = LaunchConfiguration('use_ns'); idx_lc = LaunchConfiguration('idx')  
+    namespace_lc = LaunchConfiguration('ns'); use_rviz_lc = LaunchConfiguration('use_rviz')
+    
+    return LaunchDescription([
+        world_launch_arg, use_ns_launch_arg, idx_launch_arg,
+        ns_launch_arg, use_rviz_launch_arg,
         
         DeclareLaunchArgument(
-            name='idx',
-            default_value=robot_idx,
-            description='Robot index'
+            name='use_ns', default_value=use_ns, description='Use a namespace'
         ),
-        
+        DeclareLaunchArgument(
+            name='namespace', default_value=[robot_name, idx_lc], description='Robot namespace'
+        ),
+        DeclareLaunchArgument(
+            name='idx', default_value=robot_idx, description='Robot index'
+        ),
         ExecuteProcess(
             cmd=['gazebo', '-s', 'libgazebo_ros_factory.so',  '-s', 'libgazebo_ros_init.so', LaunchConfiguration('world')],
             output='screen'
@@ -75,45 +98,46 @@ def generate_launch_description():
             executable='spawn_entity.py',
             name='urdf_spawner',
             output='screen',
-            namespace=LaunchConfiguration('namespace'),
+            # namespace=LaunchConfiguration('namespace'),
             arguments=[
                 "-topic", "robot_description", 
-                "-entity", LaunchConfiguration('namespace'),
-                "-robot_namespace", LaunchConfiguration('namespace')]
+                "-entity", namespace_lc,
+                "-robot_namespace", namespace_lc]
         ),
 
         Node(
             package='fru_bot_gazebo',
             executable='command_timeout.py',
             name='command_timeout',
-            namespace=LaunchConfiguration('namespace')
+            namespace=namespace_lc
         ),
 
         Node(
             package='robot_localization',
             executable='ekf_node',
-            namespace=LaunchConfiguration('namespace'),
+            name='ekf_node',
+            namespace=namespace_lc,
             output='screen',
             parameters=[
                 {'use_sim_time': use_sim_time,
-                 'imu0' : [LaunchConfiguration('namespace'), '/imu/data'],
-                 'odom0' : [LaunchConfiguration('namespace'), '/odom/unfiltered']
+                 'imu0' : [namespace_lc, '/imu/data'],
+                 'odom0' : [namespace_lc, '/odom/unfiltered']
                  }, 
                 ekf_config_path
             ],
-            remappings=[("odometry/filtered", "odom"),
-                        ('/tf', 'tf'), 
-                        ('/tf_static', 'tf_static')],
-            arguments=["-robot_namespace", LaunchConfiguration('namespace')]
+            remappings=remappings,
+            arguments=["-robot_namespace ", namespace_lc]
         ),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(description_launch_path),
             launch_arguments={
-                'use_sim_time': str(use_sim_time),
+                'use_sim_time': use_sim_time,
                 'publish_joints': 'false',
-                'namespace' : LaunchConfiguration('namespace'),
-                'idx' : LaunchConfiguration('idx')
+                'namespace' : namespace_lc,
+                'idx' : idx_lc,
+                'use_ns' : use_ns_lc,
+                'use_rviz' : use_rviz_lc
             }.items()
         ),
     ])

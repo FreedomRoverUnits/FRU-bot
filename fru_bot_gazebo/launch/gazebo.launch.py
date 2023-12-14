@@ -16,11 +16,12 @@ import os
 from ament_index_python import get_package_prefix
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, PythonExpression
+from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, PythonExpression, TextSubstitution
 from launch.actions import SetLaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from nav2_common.launch import RewrittenYaml
 from launch.conditions import IfCondition, UnlessCondition
 
 def generate_launch_description():
@@ -33,7 +34,7 @@ def generate_launch_description():
     remappings = [("odometry/filtered", "odom")] #  ('/tf', 'tf'), ('/tf_static', 'tf_static')
     
     description_share_path = os.pathsep + os.path.join(get_package_prefix('fru_bot_description'), 'share')
-
+    
     ekf_config_path = PathJoinSubstitution(
         [FindPackageShare("fru_bot_base"), "config", "ekf_default.yaml"]
     )
@@ -72,6 +73,14 @@ def generate_launch_description():
     use_rviz_lc = LaunchConfiguration('use_rviz')
     
     namespace_lc = PythonExpression(['"', LaunchConfiguration('ns'), '"', ' if ', use_ns_lc, ' else ""'])
+    
+    ekf_substitutions = {
+                'use_sim_time': str(use_sim_time),
+                'odom0' : ['/', namespace_lc, '/', TextSubstitution(text='odom/unfiltered')],
+                'imu0' : ['/', namespace_lc, '/', TextSubstitution(text='imu/data')]
+                }
+    configured_ekf_params = RewrittenYaml(source_file=ekf_config_path, param_rewrites=ekf_substitutions, 
+                                          root_key=namespace_lc, convert_types=True)
     return LaunchDescription([
         world_launch_arg, use_ns_launch_arg, idx_launch_arg,
         ns_launch_arg, use_rviz_launch_arg,
@@ -117,22 +126,7 @@ def generate_launch_description():
             namespace=namespace_lc,
             output='screen',
             parameters=[
-                ekf_config_path,
-                {
-                'use_sim_time': use_sim_time
-                # 'odom0' : 'odom/unfiltered',
-                # 'odom0_config' : [False, False, False,
-                #                     False, False, False,
-                #                     True, True, False, 
-                #                     False, False, True,
-                #                     False, False, False],
-                # 'imu0' : 'imu/data',
-                # 'imu0_config' : [False, False, False,
-                #                     False, False, False,
-                #                     False, False, False, 
-                #                     False, False, True,
-                #                     False, False, False],
-                }
+                configured_ekf_params
             ],
             remappings=remappings,
             arguments=["-robot_namespace ", namespace_lc]

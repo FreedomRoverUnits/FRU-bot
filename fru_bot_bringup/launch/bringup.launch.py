@@ -13,7 +13,7 @@ def generate_launch_description():
     
     use_ns=str(False)
     
-    remappings = [("odometry/filtered", "odom")]
+    remappings = [("odometry/filtered", "odom"),] #  ('/tf', 'tf'), ('/tf_static', 'tf_static')
     
     ekf_config_path = PathJoinSubstitution(
         [FindPackageShare("fru_bot_base"), "config", "ekf_default.yaml"]

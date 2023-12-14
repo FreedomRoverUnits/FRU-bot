@@ -30,7 +30,7 @@ def generate_launch_description():
     robot_idx = ''
     use_ns=str(False)
     
-    remappings = [("odometry/filtered", "odom")]
+    remappings = [("odometry/filtered", "odom")] #  ('/tf', 'tf'), ('/tf_static', 'tf_static')
     
     description_share_path = os.pathsep + os.path.join(get_package_prefix('fru_bot_description'), 'share')
 
@@ -119,19 +119,19 @@ def generate_launch_description():
             parameters=[
                 ekf_config_path,
                 {
-                'use_sim_time': use_sim_time,
-                'odom0' : 'odom/unfiltered',
-                'odom0_config' : [False, False, False,
-                                    False, False, False,
-                                    True, True, False, 
-                                    False, False, True,
-                                    False, False, False],
-                'imu0' : 'imu/data',
-                'imu0_config' : [False, False, False,
-                                    False, False, False,
-                                    False, False, False, 
-                                    False, False, True,
-                                    False, False, False],
+                'use_sim_time': use_sim_time
+                # 'odom0' : 'odom/unfiltered',
+                # 'odom0_config' : [False, False, False,
+                #                     False, False, False,
+                #                     True, True, False, 
+                #                     False, False, True,
+                #                     False, False, False],
+                # 'imu0' : 'imu/data',
+                # 'imu0_config' : [False, False, False,
+                #                     False, False, False,
+                #                     False, False, False, 
+                #                     False, False, True,
+                #                     False, False, False],
                 }
             ],
             remappings=remappings,

@@ -11,10 +11,12 @@
         <xacro:robot_2wd
         prefix="${prefix}"
         namespace="${namespace}"
-    />
+        />
     </xacro:if>
-    <xacro:robot_2wd
+    <xacro:if value="${not $(arg use_ns)}">
+        <xacro:robot_2wd
         prefix="${prefix}"
         namespace=""
-    />
+        />
+    </xacro:if>
 </robot>

@@ -7,7 +7,7 @@
           <namespace>${namespace}</namespace>
         </ros>
         <robot_base_frame>base_footprint${prefix}</robot_base_frame>
-        <updateRate>100</updateRate>
+        <updateRate>20</updateRate>
         <left_joint>left_wheel_joint${prefix}</left_joint>
         <right_joint>right_wheel_joint${prefix}</right_joint>
         <wheel_separation>${wheel_separation}</wheel_separation>
@@ -15,7 +15,7 @@
         <wheel_torque>${wheel_torque}</wheel_torque>
         <max_wheel_acceleration>1.0</max_wheel_acceleration>
         <publish_odom>true</publish_odom>
-        <publish_odom_tf>true</publish_odom_tf>
+        <publish_odom_tf>false</publish_odom_tf>
         <publish_wheel_tf>true</publish_wheel_tf>
         <odometry_frame>odom${prefix}</odometry_frame>
 

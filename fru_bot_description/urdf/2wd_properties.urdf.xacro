@@ -16,7 +16,7 @@
   <xacro:property name="base_height" value=
       "${base_bottom_height+base_col_height+base_pfm_height
   }" />
-  <xacro:property name="base_mass" value="2" />
+  <xacro:property name="base_mass" value="0.54" />
 
   <xacro:property name="wheel_radius" value="0.03" />
   <xacro:property name="wheel_width" value="0.008" />
@@ -24,7 +24,7 @@
   <xacro:property name="wheel_pos_y" value="0.052" />
   <xacro:property name="wheel_pos_z" value="-0.017" />
   <xacro:property name="wheel_mass" value="0.01" />
-  <xacro:property name="wheel_torque" value="1" />
+  <xacro:property name="wheel_torque" value="0.84" />
   <xacro:property name="front_caster_wheel" value="true" />
   <xacro:property name="rear_caster_wheel" value="false" />
 

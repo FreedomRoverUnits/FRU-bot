@@ -1,22 +1,16 @@
 <?xml version="1.0"?>
 <robot name="FRU_bot" xmlns:xacro="http://ros.org/wiki/xacro">
-    <xacro:arg name="use_ns" default="false" />
+    <xacro:arg name="remap" default="False" />
+    <xacro:arg name="ns" default="" />
     <xacro:arg name="ns_idx" default="" />
-    
     <xacro:property name="prefix" value="$(arg ns_idx)" />
-    <xacro:property name="namespace" value="FRU_bot$(arg ns_idx)" />
-
+    
     <xacro:include filename="$(find fru_bot_description)/urdf/robots/2wd.urdf.xacro"/>
-    <xacro:if value="$(arg use_ns)">
-        <xacro:robot_2wd
-        prefix="${prefix}"
-        namespace="${namespace}"
-        />
-    </xacro:if>
-    <xacro:if value="${not $(arg use_ns)}">
-        <xacro:robot_2wd
-        prefix="${prefix}"
-        namespace=""
-        />
-    </xacro:if>
+
+    <xacro:robot_2wd
+    prefix="${prefix}"
+    namespace="$(arg ns)"
+    remap="$(arg remap)"
+    />
+
 </robot>

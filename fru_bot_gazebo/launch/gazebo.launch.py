@@ -28,10 +28,9 @@ def generate_launch_description():
     use_sim_time = True
     
     robot_name = "FRU_bot"
-    robot_idx = ''
-    use_ns=str(False)
     
-    remappings = [("odometry/filtered", "odom")] #  ('/tf', 'tf'), ('/tf_static', 'tf_static')
+    remappings = [('odometry/filtered', 'odom')]
+    remappings_tf = [('odometry/filtered', 'odom'), ('/tf', 'tf'), ('/tf_static', 'tf_static')]
     
     description_share_path = os.pathsep + os.path.join(get_package_prefix('fru_bot_description'), 'share')
     
@@ -55,43 +54,47 @@ def generate_launch_description():
             name='world', default_value=world_path, description='Gazebo world'
         )
     use_ns_launch_arg = DeclareLaunchArgument(
-            name='use_ns', default_value=use_ns, description='Use a namespace'
+            name='use_ns', default_value=str(False), description='Use a namespace'
         )
-    idx_launch_arg = DeclareLaunchArgument(
-            name='idx', default_value=robot_idx, description='Robot index'
+    frame_idx_launch_arg = DeclareLaunchArgument(
+            name='frame_idx', default_value="", description='Robot index'
         )
     ns_launch_arg = DeclareLaunchArgument(
-            name='ns', default_value=[robot_name, LaunchConfiguration('idx')], 
-            description='Robot namespace'
+            name='ns', default_value="", description='Robot namespace'
         )
     use_rviz_launch_arg = DeclareLaunchArgument(
             name='use_rviz', default_value='false', description='Start rviz'
         )
+    remap_tf_launch_arg = DeclareLaunchArgument(
+        name='remap_tf', default_value=str(False), description='Remap tf topics to ns'
+        )
     
     # Launch config defs
-    use_ns_lc = LaunchConfiguration('use_ns'); idx_lc = LaunchConfiguration('idx')  
-    use_rviz_lc = LaunchConfiguration('use_rviz')
+    use_ns_lc = LaunchConfiguration('use_ns'); frame_idx_lc = LaunchConfiguration('frame_idx')  
+    use_rviz_lc = LaunchConfiguration('use_rviz'); remap_tf_lc = LaunchConfiguration('remap_tf')
     
     namespace_lc = PythonExpression(['"', LaunchConfiguration('ns'), '"', ' if ', use_ns_lc, ' else ""'])
     
     ekf_substitutions = {
                 'use_sim_time': str(use_sim_time),
-                'base_link_frame' : ['base_footprint', idx_lc],
-                'odom_frame' : ['odom', idx_lc],
-                'world_frame' : ['odom', idx_lc],
+                'base_link_frame' : ['base_footprint', frame_idx_lc],
+                'odom_frame' : ['odom', frame_idx_lc],
+                'world_frame' : ['odom', frame_idx_lc],
                 'odom0' : ['/', namespace_lc, '/', TextSubstitution(text='odom/unfiltered')],
                 'imu0' : ['/', namespace_lc, '/', TextSubstitution(text='imu/data')]
                 }
     configured_ekf_params = RewrittenYaml(source_file=ekf_config_path, param_rewrites=ekf_substitutions, 
                                           root_key=namespace_lc, convert_types=True)
     return LaunchDescription([
-        world_launch_arg, use_ns_launch_arg, idx_launch_arg,
-        ns_launch_arg, use_rviz_launch_arg,
+        world_launch_arg, use_ns_launch_arg, frame_idx_launch_arg,
+        ns_launch_arg, use_rviz_launch_arg, ns_launch_arg, 
+        remap_tf_launch_arg,
         
         ExecuteProcess(
             cmd=['gazebo', '-s', 'libgazebo_ros_factory.so',  '-s', 'libgazebo_ros_init.so', LaunchConfiguration('world')],
             output='screen'
         ),
+        
         Node(
             package='gazebo_ros',
             executable='spawn_entity.py',
@@ -115,25 +118,36 @@ def generate_launch_description():
             launch_arguments={
                 'use_sim_time': str(use_sim_time),
                 'publish_joints': 'false',
-                'namespace' : namespace_lc,
-                'idx' : idx_lc,
+                'ns' : namespace_lc,
+                'prefix' : frame_idx_lc,
                 'use_ns' : use_ns_lc,
-                'use_rviz' : use_rviz_lc
+                'use_rviz' : use_rviz_lc,
+                'remap_tf' : remap_tf_lc
             }.items()
         ),
         
+        # EKF Node w/o tf transforms
         Node(
-            package='robot_localization',
-            executable='ekf_node',
-            name='ekf_filter_node',
-            namespace=namespace_lc,
-            output='screen',
+            package='robot_localization', executable='ekf_node', name='ekf_filter_node',
+            namespace=namespace_lc, output='screen',
+            condition=UnlessCondition(remap_tf_lc),
             parameters=[
                 configured_ekf_params
             ],
             remappings=remappings,
             arguments=["-robot_namespace ", namespace_lc]
         ),
+        # EKF Node w/ tf transforms
+        Node(
+            package='robot_localization', executable='ekf_node', name='ekf_filter_node',
+            namespace=namespace_lc, output='screen',
+            condition=IfCondition(remap_tf_lc),
+            parameters=[
+                configured_ekf_params
+            ],
+            remappings=remappings_tf,
+            arguments=["-robot_namespace ", namespace_lc]
+        )
     ])
 
 #sources: 

@@ -1,10 +1,13 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:macro name="diff_drive_controller" params="prefix namespace wheel_separation wheel_radius wheel_torque">
+  <xacro:macro name="diff_drive_controller" params="prefix namespace remap wheel_separation wheel_radius wheel_torque">
     <gazebo>
       <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
         <ros>
           <argument>odom:=odom/unfiltered</argument>
           <namespace>${namespace}</namespace>
+          <xacro:if value="${remap}" >
+            <remapping>/tf:=tf</remapping>
+          </xacro:if>
         </ros>
         <robot_base_frame>base_footprint${prefix}</robot_base_frame>
         <updateRate>20</updateRate>

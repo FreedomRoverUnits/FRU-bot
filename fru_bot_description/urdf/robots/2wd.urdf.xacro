@@ -9,7 +9,7 @@
   <xacro:include filename="$(find fru_bot_description)/urdf/sensors/generic_laser.urdf.xacro" />
   <xacro:include filename="$(find fru_bot_description)/urdf/controllers/diff_drive.urdf.xacro" />
 
-  <xacro:macro name="robot_2wd" params="prefix namespace">
+  <xacro:macro name="robot_2wd" params="prefix namespace remap">
 
     <xacro:base
       prefix="${prefix}" 
@@ -71,6 +71,7 @@
     <xacro:diff_drive_controller
       prefix="${prefix}"
       namespace="${namespace}"
+      remap="${remap}"
       wheel_separation="${wheel_pos_y * 2}"
       wheel_radius="${wheel_radius}"
       wheel_torque="${wheel_torque}"

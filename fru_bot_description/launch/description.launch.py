@@ -16,7 +16,7 @@ import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution, PythonExpression
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -56,51 +56,78 @@ def generate_launch_description():
     ns_launch_arg = DeclareLaunchArgument(
             name='ns', default_value = '', description='Robot namespace'
         )
-    idx_launch_arg = DeclareLaunchArgument(
-            name='idx', default_value=idx, description='Robot index'
-        )
-    
+    use_prefix_launch_arg = DeclareLaunchArgument(
+        name='prefix', default_value='', description='Frame prefix'
+    )
+    remap_tf_launch_arg = DeclareLaunchArgument(
+        name='remap_tf', default_value='True', 
+        description='Remap tf topics to ns'
+    )
     # Launch Configuration Variables
     urdf_lc = LaunchConfiguration('urdf'); pub_jnts_lc=LaunchConfiguration('publish_joints')
     use_rviz_lc = LaunchConfiguration('use_rviz'); use_sim_time_lc = LaunchConfiguration('use_sim_time')
-    use_ns_lc = LaunchConfiguration('use_ns'); idx_lc = LaunchConfiguration('idx')
+    use_ns_lc = LaunchConfiguration('use_ns'); prefix_lc = LaunchConfiguration('prefix')
+    remap_tf_lc = LaunchConfiguration('remap_tf')
     
     namespace_lc = PythonExpression(['"', LaunchConfiguration('ns'), '"', ' if ', use_ns_lc, ' else ""'])
     return LaunchDescription([
         urdf_launch_arg, use_rviz_launch_arg, pub_jnts_launch_arg, use_sim_time_launch_arg,
-        use_ns_launch_arg, ns_launch_arg, idx_launch_arg,
+        use_ns_launch_arg, ns_launch_arg, ns_launch_arg, use_prefix_launch_arg, 
+        remap_tf_launch_arg,
         
+        ## Jnt State Pub Node w/o and w/ tf transforms
         Node(
-            package='joint_state_publisher',
-            executable='joint_state_publisher',
-            name='joint_state_publisher',
-            namespace=namespace_lc,
-            condition=IfCondition(pub_jnts_lc),
-            # remappings=remappings
+            package='joint_state_publisher', executable='joint_state_publisher',
+            name='joint_state_publisher', namespace=namespace_lc,
+            condition=IfCondition(
+                PythonExpression(['"', pub_jnts_lc, '"', ' == "true" and not ', remap_tf_lc])),
         ),
         Node(
-            package='robot_state_publisher',
-            executable='robot_state_publisher',
-            name='robot_state_publisher',
-            namespace=namespace_lc,
-            output='screen',
-            parameters=[
-                {
-                    'use_sim_time': use_sim_time_lc,
-                    'robot_description': Command(
-                        ['xacro ', urdf_lc, ' ns_idx:=', idx_lc, ' use_ns:=', use_ns_lc])
-                }
-            ],
-            # remappings=remappings
+            package='joint_state_publisher', executable='joint_state_publisher',
+            name='joint_state_publisher', namespace=namespace_lc,
+            condition=IfCondition(
+                PythonExpression(['"', pub_jnts_lc, '"', ' == "true" and ', remap_tf_lc])),
+            remappings=remappings
+        ),
+        
+        ## Robot State Pub Node w/o and w/ tf transforms
+        Node(
+            package='robot_state_publisher', executable='robot_state_publisher',
+            name='robot_state_publisher', namespace=namespace_lc,
+            condition=UnlessCondition(remap_tf_lc),
+            output='screen', parameters=[{
+                'use_sim_time': use_sim_time_lc,
+                'robot_description': Command(
+                ['xacro ', urdf_lc, ' ns:=', namespace_lc, ' ns_idx:=', prefix_lc])
+                }]
         ),
         Node(
-            package='rviz2',
-            executable='rviz2',
-            name='rviz2',
-            output='screen',
-            arguments=['-d', rviz_config_path],
-            condition=IfCondition(use_rviz_lc),
-            parameters=[{'use_sim_time': use_sim_time_lc}]
+            package='robot_state_publisher', executable='robot_state_publisher',
+            name='robot_state_publisher', namespace=namespace_lc,
+            condition=IfCondition(remap_tf_lc),
+            output='screen', parameters=[{
+                'use_sim_time': use_sim_time_lc,
+                'robot_description': Command(
+                ['xacro ', urdf_lc, ' ns:=', namespace_lc, ' ns_idx:=', prefix_lc, ' remap:=True'])
+                }],
+            remappings=remappings
+        ),
+        
+        ## Rviz w/o and w/ tf transforms
+        Node(
+            package='rviz2', executable='rviz2', name='rviz2',
+            output='screen', arguments=['-d', rviz_config_path],
+            condition=IfCondition(
+                PythonExpression(['"', use_rviz_lc, '"', ' == "true" and not ', remap_tf_lc])),
+            parameters=[{'use_sim_time': use_sim_time_lc}],
+        ),
+        Node(
+            package='rviz2', executable='rviz2', name='rviz2',
+            output='screen', arguments=['-d', rviz_config_path],
+            condition=IfCondition(
+                PythonExpression(['"', use_rviz_lc, '"', ' == "true" and ', remap_tf_lc])),
+            parameters=[{'use_sim_time': use_sim_time_lc}],
+            remappings=remappings
         )
     ])
 

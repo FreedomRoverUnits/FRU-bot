@@ -24,20 +24,22 @@ For Simulation steps skip to step 3.
 2. Start micro-ros agent via docker in another terminal.
    ```
    source /opt/ros/<your_ros_distro>/setup.bash
-   sudo docker run -it --rm --net=host microros/micro-ros-agent:humble udp4 --port 8888 -v6
+   
+   docker run -it --rm --net=host microros/micro-ros-agent:humble udp4 --port 8888 -v6
    ```
 
-3. Start EKF node and joint state publisher, set rviz flag to true to visualize robot description.
+3. Start EKF node and joint state publisher, set rviz flag to true to visualize robot description. Creates namespace "FRU_bot0" for all topics to be published under (except /tf topics, must set remap_tf to True).
    ```
-   ros2 launch fru_bot_bringup bringup_default.launch.py rviz:=true
+   source install/setup.bash
+   ros2 launch fru_bot_bringup bringup_default.launch.py rviz:=true use_loc:=True use_ns:=True idx:=0
    ```
    Or for simulation:
    ```
-   ros
+   ros2 launch fru_bot_bringup bringup_default.launch.py rviz:=true use_ns:=True idx:=0 sim:=True
    ```
 4. Control the robot manually via teleop twist commands.
    ```
-   python3 teleop_twist_keyboard_FRU.py
+   python3 teleop_twist_keyboard_FRU.py --agents 1
    ```
 
 ## Creating a map. 

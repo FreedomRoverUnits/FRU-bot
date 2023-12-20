@@ -45,14 +45,14 @@ def generate_launch_description():
     ns_launch_arg = DeclareLaunchArgument(
         name='ns', default_value=[robot_name, LaunchConfiguration('idx')], 
         description='Robot namespace'
-    )
+        )
     use_prefix_launch_arg = DeclareLaunchArgument(
         name='use_prefix', default_value=str(False), description='Use index as frame prefix'
-    )
+        )
     remap_tf_launch_arg = DeclareLaunchArgument(
         name='remap_tf', default_value=str(False), 
         description='Remap tf topics to ns'
-    )
+        )
     
     # Launch config defs
     use_rviz_lc = LaunchConfiguration('use_rviz'); sim_lc = LaunchConfiguration('sim')
@@ -85,7 +85,7 @@ def generate_launch_description():
                 PythonExpression(['not ', sim_lc, ' and ', use_loc_lc, ' and not ', remap_tf_lc])
                 ),
             parameters=[
-                configured_ekf_params
+                ekf_config_path
             ],
             remappings=remappings,
             arguments=["-robot_namespace ", namespace_lc]

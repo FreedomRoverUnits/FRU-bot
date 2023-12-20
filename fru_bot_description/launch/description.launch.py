@@ -19,6 +19,7 @@ from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitut
 from launch.conditions import IfCondition, UnlessCondition
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from nav2_common.launch import ReplaceString
 
 
 def generate_launch_description():
@@ -124,6 +125,7 @@ def generate_launch_description():
         Node(
             package='rviz2', executable='rviz2', name='rviz2',
             output='screen', arguments=['-d', rviz_config_path],
+            namespace=namespace_lc,
             condition=IfCondition(
                 PythonExpression(['"', use_rviz_lc, '"', ' == "true" and ', remap_tf_lc])),
             parameters=[{'use_sim_time': use_sim_time_lc}],

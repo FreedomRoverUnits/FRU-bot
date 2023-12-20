@@ -100,7 +100,6 @@ def generate_launch_description():
             executable='spawn_entity.py',
             name='urdf_spawner',
             output='screen',
-            # namespace=LaunchConfiguration('namespace'),
             arguments=[
                 "-topic", [namespace_lc, "/robot_description"], 
                 "-entity", namespace_lc,
@@ -132,7 +131,7 @@ def generate_launch_description():
             namespace=namespace_lc, output='screen',
             condition=UnlessCondition(remap_tf_lc),
             parameters=[
-                configured_ekf_params
+                ekf_config_path
             ],
             remappings=remappings,
             arguments=["-robot_namespace ", namespace_lc]
